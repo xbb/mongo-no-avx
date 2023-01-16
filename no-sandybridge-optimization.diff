@@ -1,0 +1,11 @@
+--- SConstruct    2022-08-29 19:57:06.000000000 +0000
++++ SConstruct    2023-01-16 00:00:00.000000000 +0000
+@@ -311,7 +311,7 @@
+     action="append",
+     choices=experimental_optimization_choices,
+     const=experimental_optimization_choices[0],
+-    default=['+sandybridge'],
++    default=[],
+     help='Enable experimental optimizations',
+     nargs='?',
+     type='choice'
