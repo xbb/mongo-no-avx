@@ -21,9 +21,12 @@ WORKDIR /src
 COPY ./no-sandybridge-optimization.diff /no-sandybridge-optimization.diff
 RUN patch -p0 < /no-sandybridge-optimization.diff
 
+ARG NUM_JOBS=
+
 RUN python3 -m pip install requirements_parser && \
     python3 -m pip install -r etc/pip/compile-requirements.txt && \
-    python3 buildscripts/scons.py install-core MONGO_VERSION="${MONGO_VERSION}" --release --disable-warnings-as-errors && \
+    if [ "${NUM_JOBS}" -gt 0 ]; then export JOBS_ARG="-j ${NUM_JOBS}"; fi && \
+    python3 buildscripts/scons.py install-core MONGO_VERSION="${MONGO_VERSION}" --release --disable-warnings-as-errors ${JOBS_ARG} \
     mv build/install /install && \
     strip --strip-debug /install/bin/mongo && \
     strip --strip-debug /install/bin/mongod && \
