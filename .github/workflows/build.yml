@@ -39,6 +39,8 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
+          build-args: |
+            NUM_JOBS
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
