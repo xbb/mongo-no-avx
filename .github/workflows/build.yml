@@ -41,6 +41,8 @@ jobs:
           platforms: linux/amd64
           build-args: |
             NUM_JOBS
+          cache-from: |
+            type=local,src=../../../.buildx_cache
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
