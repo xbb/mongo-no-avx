@@ -9,7 +9,7 @@ RUN apt update -y && apt install -y build-essential \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-ARG MONGO_VERSION=5.0.14
+ARG MONGO_VERSION=6.0.4
 
 RUN mkdir /src && \
     curl -o /tmp/mongo.tar.gz -L "https://github.com/mongodb/mongo/archive/refs/tags/r${MONGO_VERSION}.tar.gz" && \
@@ -26,9 +26,8 @@ ARG NUM_JOBS=
 RUN python3 -m pip install requirements_parser && \
     python3 -m pip install -r etc/pip/compile-requirements.txt && \
     if [ "${NUM_JOBS}" -gt 0 ]; then export JOBS_ARG="-j ${NUM_JOBS}"; fi && \
-    python3 buildscripts/scons.py install-core MONGO_VERSION="${MONGO_VERSION}" --release --disable-warnings-as-errors ${JOBS_ARG} && \
+    python3 buildscripts/scons.py install-servers MONGO_VERSION="${MONGO_VERSION}" --release --disable-warnings-as-errors ${JOBS_ARG} && \
     mv build/install /install && \
-    strip --strip-debug /install/bin/mongo && \
     strip --strip-debug /install/bin/mongod && \
     strip --strip-debug /install/bin/mongos && \
     rm -rf build
@@ -41,13 +40,11 @@ RUN apt update -y && \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /install/bin/mongo* /usr/local/bin/
-COPY ./entrypoint.sh /entrypoint.sh
 
 RUN mkdir -p /data/db && \
     chmod -R 750 /data && \
-    chown -R 999:999 /data && \
-    chmod +x /entrypoint.sh
+    chown -R 999:999 /data
 
 USER 999
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/mongod" ]
